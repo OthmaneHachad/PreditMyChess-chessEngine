@@ -14,18 +14,24 @@ import chessEngine.pieces.Rook;
 import java.util.Map ;
 
 public class ChessBoard {
+
 	public static final String EMPTY = "-" ;
 	public static final Square[][] boardMatrix = new Square[8][8];
 	public static String FEN ;
+
+	private static King whiteKing ;
+	private static King blackKing ;
 	
 	//Constructor
 	public ChessBoard(String FEN_board) {
 		this.FEN = FEN_board ;
 		createBoard();
 	}
+
+
 	
 	// Initiate the board
-	public static void createBoard() {
+	public void createBoard() {
 		
 		String[] FEN_parsed = FEN.split(" ");
 		Map<String, String> FEN_map = Map.of(
@@ -69,40 +75,42 @@ public class ChessBoard {
 				char c = square.representation ;
 				switch (c) {
 				case 'p':
-					square.piece =  new Pawn(((7-j)*8 + column), 'b', boardMatrix) ; 
+					square.piece =  new Pawn(((7-j)*8 + column), 'b', c, this) ; 
 					break;
 				case 'P':
-					square.piece = new Pawn(((7-j)*8 + column), 'w', boardMatrix);
+					square.piece = new Pawn(((7-j)*8 + column), 'w', c, this);
 					break;
 				case 'k':
-					square.piece = new King(((7-j)*8 + column), 'b', boardMatrix);
+					whiteKing = new King(((7-j)*8 + column), 'b', c, this);
+					square.piece = whiteKing;
 					break;
 				case 'K':
-					square.piece = new King(((7-j)*8 + column), 'b', boardMatrix);
+					blackKing = new King(((7-j)*8 + column), 'w', c, this);
+					square.piece = blackKing;
 					break;
 				case 'Q':
-					square.piece = new Queen(((7-j)*8 + column), 'w', boardMatrix);
+					square.piece = new Queen(((7-j)*8 + column), 'w', c, this);
 					break ;
 				case 'q':
-					square.piece = new Queen(((7-j)*8 + column), 'b', boardMatrix);
+					square.piece = new Queen(((7-j)*8 + column), 'b', c, this);
 					break ;
 				case 'N':
-					square.piece = new Knight(((7-j)*8 + column), 'w', boardMatrix);
+					square.piece = new Knight(((7-j)*8 + column), 'w', c, this);
 					break ;
 				case 'n':
-					square.piece = new Knight(((7-j)*8 + column), 'b', boardMatrix);
+					square.piece = new Knight(((7-j)*8 + column), 'b', c, this);
 					break ;
 				case 'R':
-					square.piece = new Rook(((7-j)*8 + column), 'w', boardMatrix);
+					square.piece = new Rook(((7-j)*8 + column), 'w', c, this);
 					break ;
 				case 'r':
-					square.piece = new Rook(((7-j)*8 + column), 'b', boardMatrix);
+					square.piece = new Rook(((7-j)*8 + column), 'b', c, this);
 					break ;
 				case 'b':
-					square.piece = new Bishop(((7-j)*8 + column), 'b', boardMatrix);
+					square.piece = new Bishop(((7-j)*8 + column), 'b', c, this);
 					break ;
 				case 'B':
-					square.piece = new Bishop(((7-j)*8 + column), 'w', boardMatrix);
+					square.piece = new Bishop(((7-j)*8 + column), 'w', c, this);
 					break ;
 				
 				}
@@ -113,6 +121,9 @@ public class ChessBoard {
 		
 	}
 	
+
+
+
 	public static void printBoard() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -122,6 +133,14 @@ public class ChessBoard {
             System.out.println();
         }
     }
+
+	public King getWhiteKing(){
+		return this.whiteKing;
+	}
+
+	public King getBlackKing(){
+		return this.blackKing ;
+	}
 	
 
 }

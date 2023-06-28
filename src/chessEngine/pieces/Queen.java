@@ -9,23 +9,20 @@ import chessEngine.Piece;
 import chessEngine.Square;
 
 public class Queen extends Piece{
+	
+	
+	public Queen(int position, char color, char letter, ChessBoard board) {
+		super(position, color, letter, board);
 
-	
-	public int queenPosition ;
-	public char queenColor;
-	public char queenLetter ;
-	public Square[][] chessBoard ;
-	
-	
-	public Queen(int position, char color, Square[][] board) {
-		super(position, color, board);
-		this.chessBoard = board ;
-		this.queenPosition = position ;
-		this.queenColor = color ;
-		if (queenColor == 'b') {
-			this.queenLetter = 'p' ;
+		final int row = piecePosition / 8 ;
+		final int column = piecePosition % 8 ;
+
+		if (pieceColor == 'b') {
+			this.pieceLetter = 'q' ;
+			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
 		} else {
-			this.queenLetter = 'P' ;
+			this.pieceLetter = 'Q' ;
+			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
 		}
 	}
 
@@ -87,6 +84,7 @@ public class Queen extends Piece{
 			return false ;
 		}
 
+
 		if (Math.abs(targetRow - startRow) == Math.abs(targetColumn - startColumn)){
 			// Check if the path to the target square is clear
 	        int rowStep = (targetRow > startRow) ? 1 : -1;
@@ -131,7 +129,7 @@ public class Queen extends Piece{
 	@Override
 	public void move(int targetPosition) {
 		if (isMoveLegal(new Move(targetPosition)) == true) {
-			queenPosition = targetPosition ;
+			this.piecePosition = targetPosition ;
 		} else {
 			System.out.println("Illegal Move");
 		}
@@ -148,10 +146,10 @@ List<Integer> listAttackingSquares = new ArrayList<>();
 
 		// loop over all four directions at the same time
 		for (int i = 1; i < 8; i ++) {
-			int NW = this.queenPosition + (i*8) - i;
-			int NE = this.queenPosition + (i*8) + i;
-			int SW = this.queenPosition - (i*8) - i;
-			int SE = this.queenPosition - (i*8) + i;
+			int NW = this.piecePosition + (i*8) - i;
+			int NE = this.piecePosition + (i*8) + i;
+			int SW = this.piecePosition - (i*8) - i;
+			int SE = this.piecePosition - (i*8) + i;
 			
 			if (this.isMoveLegal(new Move(NW)) == true) {
 				chessBoard[7-NW/8][NW%8].representation = 'o';

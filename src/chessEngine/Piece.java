@@ -6,12 +6,18 @@ public abstract class Piece {
 	
     public int piecePosition;
     public char pieceColor;
-    public Square[][] chessBoard;
+    public char pieceLetter ;
+    protected Square[][] chessBoard;
+    protected ChessBoard cb ;
+
+
     
     
 
-    public Piece(int position, char color, Square[][] board) {
-        this.chessBoard = board;
+    public Piece(int position, char color, char letter, ChessBoard board) {
+        this.cb = board ;
+        this.chessBoard = board.boardMatrix;
+        this.pieceLetter = letter ;
         this.piecePosition = position;
         this.pieceColor = color;
     }

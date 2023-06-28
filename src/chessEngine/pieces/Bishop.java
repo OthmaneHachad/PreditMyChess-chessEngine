@@ -9,23 +9,20 @@ import chessEngine.Square;
 import chessEngine.ChessBoard;
 
 public class Bishop extends Piece{
+	
+	
+	public Bishop(int position, char color, char letter, ChessBoard board) {
+		super(position, color, letter, board);
 
-	
-	public int bishopPosition ;
-	public char bishopColor;
-	public char bishopLetter ;
-	public Square[][] chessBoard ;
-	
-	
-	public Bishop(int position, char color, Square[][] board) {
-		super(position, color, board);
-		this.chessBoard = board ;
-		this.bishopPosition = position ;
-		this.bishopColor = color ;
-		if (bishopColor == 'b') {
-			this.bishopLetter = 'p' ;
+		final int row = this.piecePosition / 8 ;
+		final int column = this.piecePosition % 8 ;
+
+		if (pieceColor == 'b') {
+			this.pieceLetter = 'b' ;
+			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
 		} else {
-			this.bishopLetter = 'P' ;
+			this.pieceLetter = 'B' ;
+			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
 		}
 	}
 
@@ -49,6 +46,10 @@ public class Bishop extends Piece{
 	    	System.out.println("OUT OF RANGE");
 	        return false;
 	    }
+
+		if (target == this.piecePosition){
+			return false ;
+		}
 
 	 // Check if the move is diagonal
 	    if (Math.abs(targetRow - startRow) == Math.abs(targetColumn - startColumn)) {
@@ -93,7 +94,7 @@ public class Bishop extends Piece{
 	@Override
 	public void move(int targetPosition) {
 		if (isMoveLegal(new Move(targetPosition)) == true) {
-			bishopPosition = targetPosition ;
+			piecePosition = targetPosition ;
 		} else {
 			System.out.println("Illegal Move");
 		}
@@ -106,10 +107,10 @@ public class Bishop extends Piece{
 		
 		// loop over all four directions at the same time
 		for (int i = 1; i < 8; i ++) {
-			int NW = this.bishopPosition + (i*8) - i;
-			int NE = this.bishopPosition + (i*8) + i;
-			int SW = this.bishopPosition - (i*8) - i;
-			int SE = this.bishopPosition - (i*8) + i;
+			int NW = this.piecePosition + (i*8) - i;
+			int NE = this.piecePosition + (i*8) + i;
+			int SW = this.piecePosition - (i*8) - i;
+			int SE = this.piecePosition - (i*8) + i;
 			
 			if (this.isMoveLegal(new Move(NW)) == true) {
 				chessBoard[7-NW/8][NW%8].representation = 'x';

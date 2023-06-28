@@ -11,27 +11,22 @@ import chessEngine.Move;
 
 public class King extends Piece{
 
-	public int kingPosition ;
-	public char kingColor;
-	public boolean isChecked ;
-	public char kingLetter ;
-	public Square[][] chessBoard ;
+	protected boolean isChecked ;
 	
-	public King(int position, char color, Square[][] board) {
-		super(position, color, board);
-		this.chessBoard = board ;
-		this.kingPosition = position ;
-		this.kingColor = color ;
+	public King(int position, char color, char letter, ChessBoard board) {
+		super(position, color, letter, board);
+		this.piecePosition = position ;
+		this.pieceColor = color ;
 		
-		final int row = kingPosition / 8 ;
-		final int column = kingPosition % 8 ;
+		final int row = this.piecePosition / 8 ;
+		final int column = this.piecePosition % 8 ;
 		
-		if (kingColor == 'b') {
-			kingLetter = 'k' ;
-			board[row][column].piecesAttackingB = setAttackingSquares() ;
+		if (this.pieceColor == 'b') {
+			this.pieceLetter = 'k' ;
+			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
 		}else {
-			kingLetter = 'K' ;
-			board[row][column].piecesAttackingW = setAttackingSquares() ;
+			this.pieceLetter = 'K' ;
+			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
 		}
 		this.isChecked = KingChecked();
 		
@@ -40,15 +35,15 @@ public class King extends Piece{
 	}
 	
 	private boolean KingChecked() {
-		final int row = kingPosition / 8 ;
-		final int column = kingPosition % 8 ;
+		final int row = this.piecePosition / 8 ;
+		final int column = this.piecePosition % 8 ;
 		return chessBoard[7-row][7-column].isAttacked ;
 	}
 	
 	
 	public void move(int targetPosition) {
 		if (isMoveLegal(new Move(targetPosition)) == true) {
-			kingPosition = targetPosition ;
+			this.piecePosition = targetPosition ;
 		} else {
 			System.out.println("Illegal Move");
 		}
@@ -56,19 +51,19 @@ public class King extends Piece{
 	
 	@Override
 	public boolean isMoveLegal(Move kingMove) {
-		final int startRow = kingPosition / 8 ;
-		final int startColumn = kingPosition % 8 ;
+		final int startRow = this.piecePosition / 8 ;
+		final int startColumn = this.piecePosition % 8 ;
 
 		final int targetRow = kingMove.getTargetSquare() / 8 ;
 		final int targetColumn = kingMove.getTargetSquare() % 8 ;
 		
-		List<Integer> piecesAttackingTarget = kingColor == 'w' ? chessBoard[targetRow][targetColumn].piecesAttackingW
+		List<Integer> piecesAttackingTarget = this.pieceColor == 'w' ? chessBoard[targetRow][targetColumn].piecesAttackingW
 				: chessBoard[targetRow][targetColumn].piecesAttackingB ;
 		ArrayList<Integer> deplacement = new ArrayList<Integer>(Arrays.asList(7,8,9,1,-1,-7,-8,-9));
 		
 		// here its the same types of moves for capturing and moving around
 		if (piecesAttackingTarget.isEmpty() == true) {
-			if(deplacement.contains((kingMove.getTargetSquare() - kingPosition))) {
+			if(deplacement.contains((kingMove.getTargetSquare() - this.piecePosition))) {
 				return true ;
 			}
 		}
@@ -80,14 +75,14 @@ public class King extends Piece{
 	public List<Integer> setAttackingSquares() {
 		
 		List<Integer> listAttackingSquares = new ArrayList<>();
-		listAttackingSquares.add(kingPosition+7);
-		listAttackingSquares.add(kingPosition+9);
-		listAttackingSquares.add(kingPosition+8);
-		listAttackingSquares.add(kingPosition+1);
-		listAttackingSquares.add(kingPosition-1);
-		listAttackingSquares.add(kingPosition-8);
-		listAttackingSquares.add(kingPosition-9);
-		listAttackingSquares.add(kingPosition-7);
+		listAttackingSquares.add(this.piecePosition+7);
+		listAttackingSquares.add(this.piecePosition+9);
+		listAttackingSquares.add(this.piecePosition+8);
+		listAttackingSquares.add(this.piecePosition+1);
+		listAttackingSquares.add(this.piecePosition-1);
+		listAttackingSquares.add(this.piecePosition-8);
+		listAttackingSquares.add(this.piecePosition-9);
+		listAttackingSquares.add(this.piecePosition-7);
 		
 		
 		return listAttackingSquares ;

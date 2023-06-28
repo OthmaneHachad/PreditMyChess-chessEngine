@@ -9,31 +9,21 @@ import chessEngine.Square;
 import chessEngine.ChessBoard;
 
 public class Rook extends Piece{
-
 	
-	public int rookPosition ;
-	public char rookColor;
-	public char rookLetter ;
-	public Square[][] chessBoard ;
-	
-	
-	public Rook(int position, char color, Square[][] board) {
-		super(position, color, board);
-		this.chessBoard = board ;
-		this.rookPosition = position ;
-		this.rookColor = color ;
-		if (rookColor == 'b') {
-			this.rookLetter = 'p' ;
+	public Rook(int position, char color, char letter, ChessBoard board) {
+		super(position, color, letter, board);
+		if (this.pieceColor == 'b') {
+			this.pieceLetter = 'b' ;
 		} else {
-			this.rookLetter = 'P' ;
+			this.pieceLetter = 'B' ;
 		}
 	}
 
 	@Override
 
 	public boolean isMoveLegal(Move move){
-		final int startRow = rookPosition / 8 ;
-		final int startColumn = rookPosition % 8 ;
+		final int startRow = this.piecePosition / 8 ;
+		final int startColumn = this.piecePosition % 8 ;
 
 		final int target  = move.getTargetSquare() ;
 
@@ -102,7 +92,7 @@ public class Rook extends Piece{
 	@Override
 	public void move(int targetPosition) {
 		if (isMoveLegal(new Move(targetPosition)) == true) {
-			rookPosition = targetPosition ;
+			this.piecePosition = targetPosition ;
 		} else {
 			System.out.println("Illegal Move");
 		}
