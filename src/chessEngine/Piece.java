@@ -9,7 +9,7 @@ public abstract class Piece {
     public char pieceLetter ;
     protected Square[][] chessBoard;
     protected ChessBoard cb ;
-
+    public List<Move> targetMoves ;
 
     
     
@@ -17,14 +17,15 @@ public abstract class Piece {
     public Piece(int position, char color, char letter, ChessBoard board) {
         this.cb = board ;
         this.chessBoard = board.boardMatrix;
+        
         this.pieceLetter = letter ;
         this.piecePosition = position;
         this.pieceColor = color;
     }
 
     public abstract boolean isMoveLegal(Move move);
-    public abstract void move(int targetPosition);
-    public abstract List<Integer> setAttackingSquares();
+    public abstract void move(Move move);
+    public abstract List<Move> setAttackingSquares();
 
     private static void myFunction(){
         

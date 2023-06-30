@@ -3,6 +3,8 @@ package chessEngine;
 
 import chessEngine.Square ;
 import java.util.HashMap ;
+import java.util.List;
+import java.util.ArrayList;
 
 import chessEngine.pieces.Bishop;
 import chessEngine.pieces.King;
@@ -21,11 +23,16 @@ public class ChessBoard {
 
 	private static King whiteKing ;
 	private static King blackKing ;
+
+	List<Integer> targetedByWhite = new ArrayList<Integer>() ;
+	List<Integer> targetedByBlack = new ArrayList<Integer>() ;
 	
 	//Constructor
 	public ChessBoard(String FEN_board) {
 		this.FEN = FEN_board ;
 		createBoard();
+		printBoard();
+		setAttackedSquares();
 	}
 
 
@@ -52,12 +59,10 @@ public class ChessBoard {
 				
 				if (Character.isDigit(c)) {
 					for (int a = 0; a < Character.getNumericValue(c); a++) {
-						// PROBLEME DU DEPLACEMENT DU FOU ICI
 						boardMatrix[i][column] = new Square(false, ((7-i)*8 + column), false);
 						column ++ ;
 					}
 				} else {
-					// PROBLEME DU DEPLACEMENT DU FOU ICI
 					boardMatrix[i][column] = new Square(false, ((7-i)*8 + column), true);
 					boardMatrix[i][column].representation = c ;
 					
@@ -69,7 +74,7 @@ public class ChessBoard {
 		}
 		
 		// Loop a second time after all the Squares were initialized
-		for (int j = 1; j < 8; j ++) {
+		for (int j = 0; j < 8; j ++) {
 			int column = 0 ;
 			for (Square square: boardMatrix[j]) {
 				char c = square.representation ;
@@ -141,6 +146,29 @@ public class ChessBoard {
 	public King getBlackKing(){
 		return this.blackKing ;
 	}
+
+	public boolean isKingInCheck(char player){
+		King king = (player == 'w') ? getWhiteKing() : getBlackKing() ;
+		return king.isChecked ;
+	}
 	
+
+	private void setAttackedSquares(){
+		for (int j = 0; j <=7; j ++) {
+			for (Square square: boardMatrix[j]) {
+				if (square.piece != null){
+					System.out.println(square.piece.pieceLetter);
+					square.piece.targetMoves = square.piece.setAttackingSquares() ;
+					for (Move mv: square.piece.targetMoves){
+						if (square.piece.pieceColor == 'w' && !targetedByWhite.contains(mv.getTargetSquare())){
+							targetedByWhite.add(mv.getTargetSquare());
+						} else if (square.piece.pieceColor == 'b' && !targetedByBlack.contains(mv.getTargetSquare())){
+							targetedByBlack.add(mv.getTargetSquare());
+						}
+					}
+				}
+			}
+		}
+	}
 
 }

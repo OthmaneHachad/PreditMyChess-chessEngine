@@ -12,17 +12,6 @@ public class Knight extends Piece{
 
 	public Knight(int position, char color, char letter, ChessBoard board) {
 		super(position, color, letter, board);
-
-		final int row = this.piecePosition / 8 ;
-		final int column = this.piecePosition % 8 ;
-
-		if (this.pieceColor == 'b') {
-			this.pieceLetter = 'n' ;
-			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
-		} else {
-			this.pieceLetter = 'N' ;
-			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
-		}
 	}
 
 	
@@ -36,13 +25,23 @@ public class Knight extends Piece{
 		int targetRow = target / 8 ;
 		int targetColumn = target % 8 ;
 
+		
+
+
 		// Ensure the target square is on the board.
 	    if (target < 0 || target > 63) {
+			System.out.println(target);
 	    	System.out.println("OUT OF RANGE");
 	        return false;
 	    }
 
 		if (target == this.piecePosition){
+			return false ;
+		}
+
+		char currentplayer = this.pieceColor ;
+
+		if (cb.isKingInCheck(currentplayer) == true){
 			return false ;
 		}
 
@@ -58,9 +57,9 @@ public class Knight extends Piece{
 	}
 
 	@Override
-	public void move(int targetPosition) {
-		if (isMoveLegal(new Move(targetPosition)) == true) {
-			piecePosition = targetPosition ;
+	public void move(Move move) {
+		if (isMoveLegal(move) == true) {
+			this.piecePosition = move.getTargetSquare() ;
 		} else {
 			System.out.println("Illegal Move");
 		}
@@ -68,8 +67,8 @@ public class Knight extends Piece{
 	}
 
 	@Override
-	public List<Integer> setAttackingSquares() {
-		List<Integer> listAttackingSquares = new ArrayList<>();
+	public List<Move> setAttackingSquares() {
+		List<Move> listAttackingSquares = new ArrayList<>();
 
 		int row = this.piecePosition / 8 ;
 		int column = this.piecePosition % 8 ;
@@ -78,8 +77,8 @@ public class Knight extends Piece{
 
 		for (int target: moveList){
 			if (this.isMoveLegal(new Move(target)) == true){
-				//chessBoard[7-target/8][target%8].representation = 'o' ;
-				listAttackingSquares.add(target);
+				chessBoard[7-target/8][target%8].isAttacked = true ;
+				listAttackingSquares.add(new Move(target));
 			}
 		}
 		return listAttackingSquares;

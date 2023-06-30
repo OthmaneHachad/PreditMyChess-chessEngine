@@ -16,17 +16,8 @@ public class Pawn extends Piece{
 	public Pawn(int position, char color, char letter, ChessBoard board) {
 		// here promotion is doublePromotion boolean
 		super(position, color, letter, board);
+		this.targetMoves = setAttackingSquares();
 		
-		final int row = piecePosition / 8 ;
-		final int column = piecePosition % 8 ;
-		
-		if (pieceColor == 'b') {
-			this.pieceLetter = 'p' ;
-			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
-		} else {
-			this.pieceLetter = 'P' ;
-			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
-		}
 		if ((position >= 8 && position <= 15) && (color == 'b')) {
 			this.doublePromotion = false ;
 		} else if ((position >= 48 && position <= 55) && (color == 'w')) {
@@ -35,48 +26,55 @@ public class Pawn extends Piece{
 	}
 	
 	@Override
-	public void move(int targetPosition) {
-		if (isMoveLegal(new Move(targetPosition)) == true) {
-			piecePosition = targetPosition ;
-			doublePromotion = true ;
+	public void move(Move move) {
+		if (isMoveLegal(move) == true) {
+			this.piecePosition = move.getTargetSquare() ;
+			this.doublePromotion = true ;
 		} else {
 			System.out.println("Illegal Move");
 		}
+		
 	}
 	
 	@Override
-	public boolean isMoveLegal(Move pawnMove) {
+	public boolean isMoveLegal(Move move) {
 		
 		final int startRow = piecePosition / 8 ;
 		final int startColumn = piecePosition % 8 ;
 
-		final int targetRow = pawnMove.getTargetSquare() / 8 ;
-		final int targetColumn = pawnMove.getTargetSquare() % 8 ;
+		final int targetRow = move.getTargetSquare() / 8 ;
+		final int targetColumn = move.getTargetSquare() % 8 ;
+
+		char currentplayer = this.pieceColor ;
+
+		if (cb.isKingInCheck(currentplayer) == true){
+			return false ;
+		}
 		
-		if (chessBoard[targetRow][targetColumn].representation == '-') {
+		if (chessBoard[7-targetRow][targetColumn].piece != null) {
 			// suppose we just want to promote normally our pawn
-			if ((pawnMove.getTargetSquare() - piecePosition) == 8) {
+			if ((move.getTargetSquare() - piecePosition) == 8) {
 				return true ;
 			}
 			
 			// here we address the one-time double promotion case
-			if ((pawnMove.getTargetSquare() - piecePosition) == 16 
+			if ((move.getTargetSquare() - piecePosition) == 16 
 					&& doublePromotion == false) {
 				return true ;
 			}
 			// En passant
-			if(chessBoard[targetRow-1][targetColumn].representation != '-'){
-				if((pawnMove.getTargetSquare() - piecePosition) == 7
-						|| (pawnMove.getTargetSquare() - piecePosition) == 9) {
+			if(chessBoard[7-targetRow][targetColumn].piece != null){
+				if((move.getTargetSquare() - piecePosition) == 7
+						|| (move.getTargetSquare() - piecePosition) == 9) {
 					return true ;
 				}
 			}
 			
 			
 		} 
-		if (chessBoard[targetRow][targetColumn].representation != '-') {
-			if((pawnMove.getTargetSquare() - piecePosition) == 7
-					|| (pawnMove.getTargetSquare() - piecePosition) == 9) {
+		if (chessBoard[7-targetRow][targetColumn].piece != null) {
+			if((move.getTargetSquare() - piecePosition) == 7
+					|| (move.getTargetSquare() - piecePosition) == 9) {
 				return true ;
 			}
 			
@@ -86,11 +84,13 @@ public class Pawn extends Piece{
 	}
 
 	@Override
-	public List<Integer> setAttackingSquares() {
+	public List<Move> setAttackingSquares() {
 		
-		List<Integer> listAttackingSquares = new ArrayList<>();
-		listAttackingSquares.add(piecePosition+7);
-		listAttackingSquares.add(piecePosition+9);
+		List<Move> listAttackingSquares = new ArrayList<>();
+		listAttackingSquares.add(new Move(piecePosition+7));
+		chessBoard[7-((piecePosition+7)/8)][(piecePosition+7)%8].isAttacked = true ;
+		listAttackingSquares.add(new Move(piecePosition+9));
+		chessBoard[7-((piecePosition+9)/8)][(piecePosition+9)%8].isAttacked = true ;
 		
 		return listAttackingSquares ;
 	}

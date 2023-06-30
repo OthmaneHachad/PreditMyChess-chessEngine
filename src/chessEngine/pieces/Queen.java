@@ -13,17 +13,6 @@ public class Queen extends Piece{
 	
 	public Queen(int position, char color, char letter, ChessBoard board) {
 		super(position, color, letter, board);
-
-		final int row = piecePosition / 8 ;
-		final int column = piecePosition % 8 ;
-
-		if (pieceColor == 'b') {
-			this.pieceLetter = 'q' ;
-			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
-		} else {
-			this.pieceLetter = 'Q' ;
-			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
-		}
 	}
 
 	private boolean pathClear(int start, int end, int fixed, boolean isHorizontal, Square[][] board) {
@@ -84,6 +73,12 @@ public class Queen extends Piece{
 			return false ;
 		}
 
+		char currentplayer = this.pieceColor ;
+
+		if (cb.isKingInCheck(currentplayer) == true){
+			return false ;
+		}
+
 
 		if (Math.abs(targetRow - startRow) == Math.abs(targetColumn - startColumn)){
 			// Check if the path to the target square is clear
@@ -115,10 +110,8 @@ public class Queen extends Piece{
 		 	(startRow != targetRow && startColumn == targetColumn)){
 				// Move horizontal
 				if (startRow == targetRow){
-					System.out.println("ITS A HORIZONTAL MOVE");
 					return pathClear(startColumn, targetColumn, startRow, true, chessBoard);
 				} else if (startColumn == targetColumn){
-					System.out.println("ITS A VERTICAL MOVE");
 					return pathClear(startRow, targetRow, startColumn, false, chessBoard);
 				}
 			}
@@ -127,9 +120,9 @@ public class Queen extends Piece{
 	}
 
 	@Override
-	public void move(int targetPosition) {
-		if (isMoveLegal(new Move(targetPosition)) == true) {
-			this.piecePosition = targetPosition ;
+	public void move(Move move) {
+		if (isMoveLegal(move) == true) {
+			this.piecePosition = move.getTargetSquare() ;
 		} else {
 			System.out.println("Illegal Move");
 		}
@@ -137,8 +130,8 @@ public class Queen extends Piece{
 	}
 
 	@Override
-	public List<Integer> setAttackingSquares() {
-List<Integer> listAttackingSquares = new ArrayList<>();
+	public List<Move> setAttackingSquares() {
+List<Move> listAttackingSquares = new ArrayList<>();
 		
 		int start = this.piecePosition ;
 		int column = start % 8;
@@ -152,23 +145,23 @@ List<Integer> listAttackingSquares = new ArrayList<>();
 			int SE = this.piecePosition - (i*8) + i;
 			
 			if (this.isMoveLegal(new Move(NW)) == true) {
-				chessBoard[7-NW/8][NW%8].representation = 'o';
-				listAttackingSquares.add(NW) ;
+				chessBoard[7-NW/8][NW%8].isAttacked = true;
+				listAttackingSquares.add(new Move(NW)) ;
 			}
 			
 			if (this.isMoveLegal(new Move(NE)) == true) {
-				chessBoard[7-NE/8][NE%8].representation = 'o';
-				listAttackingSquares.add(NE) ;
+				chessBoard[7-NE/8][NE%8].isAttacked = true;
+				listAttackingSquares.add(new Move(NE)) ;
 			}
 
 			if (this.isMoveLegal(new Move(SW)) == true) {
-				chessBoard[7-SW/8][SW%8].representation = 'o';
-				listAttackingSquares.add(SW) ;
+				chessBoard[7-SW/8][SW%8].isAttacked = true;
+				listAttackingSquares.add(new Move(SW)) ;
 			}
 
 			if (this.isMoveLegal(new Move(SE)) == true) {
-				chessBoard[7-(SE/8)][(SE%8)].representation = 'o';
-				listAttackingSquares.add(SE) ;
+				chessBoard[7-(SE/8)][(SE%8)].isAttacked = true;
+				listAttackingSquares.add(new Move(SE)) ;
 			}
 
 			
@@ -177,19 +170,16 @@ List<Integer> listAttackingSquares = new ArrayList<>();
 		for (int i = column; i < 64; i = i + 8){
 			boolean verticalMove = isMoveLegal(new Move(i));
 			if (verticalMove == true){
-				chessBoard[7-(i/8)][i%8].representation = 'o' ;
-				System.out.println("New Vertical Move !");
-				listAttackingSquares.add(i);
+				chessBoard[7-(i/8)][i%8].isAttacked = true ;
+				listAttackingSquares.add(new Move(i));
 			}
 		}
 
 		for (int i = row *8; i < (row+1)*8; i++ ){
-			System.out.println("New Move: " + i);
 			boolean verticalMove = isMoveLegal(new Move(i));
 			if (verticalMove == true){
-				chessBoard[7-(i/8)][i%8].representation = 'o' ;
-				System.out.println("New Horizontal Move !");
-				listAttackingSquares.add(i);
+				chessBoard[7-(i/8)][i%8].isAttacked = true ;
+				listAttackingSquares.add(new Move(i));
 			}
 		}
 

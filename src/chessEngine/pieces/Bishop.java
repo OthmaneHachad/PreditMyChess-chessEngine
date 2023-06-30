@@ -13,17 +13,6 @@ public class Bishop extends Piece{
 	
 	public Bishop(int position, char color, char letter, ChessBoard board) {
 		super(position, color, letter, board);
-
-		final int row = this.piecePosition / 8 ;
-		final int column = this.piecePosition % 8 ;
-
-		if (pieceColor == 'b') {
-			this.pieceLetter = 'b' ;
-			chessBoard[row][column].piecesAttackingB = setAttackingSquares() ;
-		} else {
-			this.pieceLetter = 'B' ;
-			chessBoard[row][column].piecesAttackingW = setAttackingSquares() ;
-		}
 	}
 
 	@Override
@@ -48,6 +37,12 @@ public class Bishop extends Piece{
 	    }
 
 		if (target == this.piecePosition){
+			return false ;
+		}
+
+		char currentplayer = this.pieceColor ;
+
+		if (cb.isKingInCheck(currentplayer) == true){
 			return false ;
 		}
 
@@ -92,18 +87,18 @@ public class Bishop extends Piece{
 
 
 	@Override
-	public void move(int targetPosition) {
-		if (isMoveLegal(new Move(targetPosition)) == true) {
-			piecePosition = targetPosition ;
+	public void move(Move move) {
+		if (isMoveLegal(move) == true) {
+			this.piecePosition = move.getTargetSquare() ;
 		} else {
 			System.out.println("Illegal Move");
 		}
+		
 	}
 
 	@Override
-	// * A TESTER *
-	public List<Integer> setAttackingSquares() {
-		List<Integer> listAttackingSquares = new ArrayList<>();
+	public List<Move> setAttackingSquares() {
+		List<Move> listAttackingSquares = new ArrayList<>();
 		
 		// loop over all four directions at the same time
 		for (int i = 1; i < 8; i ++) {
@@ -113,23 +108,23 @@ public class Bishop extends Piece{
 			int SE = this.piecePosition - (i*8) + i;
 			
 			if (this.isMoveLegal(new Move(NW)) == true) {
-				chessBoard[7-NW/8][NW%8].representation = 'x';
-				listAttackingSquares.add(NW) ;
+				chessBoard[7-NW/8][NW%8].isAttacked = true;
+				listAttackingSquares.add(new Move(NW)) ;
 			}
 			
 			if (this.isMoveLegal(new Move(NE)) == true) {
-				chessBoard[7-NE/8][NE%8].representation = 'x';
-				listAttackingSquares.add(NE) ;
+				chessBoard[7-NE/8][NE%8].isAttacked = true;
+				listAttackingSquares.add(new Move(NE)) ;
 			}
 
 			if (this.isMoveLegal(new Move(SW)) == true) {
-				chessBoard[7-SW/8][SW%8].representation = 'x';
-				listAttackingSquares.add(SW) ;
+				chessBoard[7-SW/8][SW%8].isAttacked = true;
+				listAttackingSquares.add(new Move(SW)) ;
 			}
 
 			if (this.isMoveLegal(new Move(SE)) == true) {
-				chessBoard[7-(SE/8)][(SE%8)].representation = 'x';
-				listAttackingSquares.add(SE) ;
+				chessBoard[7-(SE/8)][(SE%8)].isAttacked = true;
+				listAttackingSquares.add(new Move(SE)) ;
 			}
 
 		}

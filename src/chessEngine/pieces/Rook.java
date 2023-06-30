@@ -12,11 +12,6 @@ public class Rook extends Piece{
 	
 	public Rook(int position, char color, char letter, ChessBoard board) {
 		super(position, color, letter, board);
-		if (this.pieceColor == 'b') {
-			this.pieceLetter = 'b' ;
-		} else {
-			this.pieceLetter = 'B' ;
-		}
 	}
 
 	@Override
@@ -36,6 +31,12 @@ public class Rook extends Piece{
 		}
 
 		if (target == this.piecePosition){
+			return false ;
+		}
+
+		char currentplayer = this.pieceColor ;
+
+		if (cb.isKingInCheck(currentplayer) == true){
 			return false ;
 		}
 
@@ -90,17 +91,18 @@ public class Rook extends Piece{
 	}
 
 	@Override
-	public void move(int targetPosition) {
-		if (isMoveLegal(new Move(targetPosition)) == true) {
-			this.piecePosition = targetPosition ;
+	public void move(Move move) {
+		if (isMoveLegal(move) == true) {
+			this.piecePosition = move.getTargetSquare() ;
 		} else {
 			System.out.println("Illegal Move");
 		}
+		
 	}
 
 	@Override
-	public List<Integer> setAttackingSquares(){
-		List<Integer> listAttackingSquares = new ArrayList<>() ;
+	public List<Move> setAttackingSquares(){
+		List<Move> listAttackingSquares = new ArrayList<>() ;
 
 		int start = this.piecePosition ;
 		int column = start % 8;
@@ -111,7 +113,8 @@ public class Rook extends Piece{
 			if (verticalMove == true){
 				//chessBoard[7-(i/8)][i%8].representation = 'o' ;
 				System.out.println("New Vertical Move !");
-				listAttackingSquares.add(i);
+				listAttackingSquares.add(new Move(i));
+				chessBoard[7-(i/8)][i%8].isAttacked = true ;
 			}
 		}
 
@@ -121,7 +124,8 @@ public class Rook extends Piece{
 			if (verticalMove == true){
 				//chessBoard[7-(i/8)][i%8].representation = 'o' ;
 				System.out.println("New Horizontal Move !");
-				listAttackingSquares.add(i);
+				listAttackingSquares.add(new Move(i));
+				chessBoard[7-(i/8)][i%8].isAttacked = true ;
 			}
 		}
 		
