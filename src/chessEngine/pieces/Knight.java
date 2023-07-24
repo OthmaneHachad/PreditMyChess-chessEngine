@@ -30,10 +30,21 @@ public class Knight extends Piece{
 
 		// Ensure the target square is on the board.
 	    if (target < 0 || target > 63) {
-			System.out.println(target);
-	    	System.out.println("OUT OF RANGE");
 	        return false;
 	    }
+
+		// ensure the king is not checked
+		int kingPosition = (this.pieceColor == 'w') ? this.cb.getWhiteKing().piecePosition : this.cb.getBlackKing().piecePosition ;
+		Square kingSquare = ChessBoard.boardMatrix[7-(kingPosition/8)][kingPosition%8];
+		if (kingSquare.isAttacked){
+			return false ;
+		}
+
+		if (cb.boardMatrix[7-(target/8)][target%8].piece != null){
+			if (cb.boardMatrix[7-(target/8)][target%8].piece.pieceColor == this.pieceColor){
+				return false ;
+			}
+		}
 
 		if (target == this.piecePosition){
 			return false ;
@@ -76,12 +87,24 @@ public class Knight extends Piece{
 		int[] moveList = new int[]{((row+2)*8 + column+ 1), ((row+2)*8 + column- 1), ((row-2)*8 + column+1), ((row-2)*8 + column-1), ((row+1)*8 + column+ 2), ((row+1)*8 + column- 2), ((row-1)*8 + column+2), ((row-1)*8 + column-2) };
 
 		for (int target: moveList){
-			if (this.isMoveLegal(new Move(target)) == true){
-				chessBoard[7-target/8][target%8].isAttacked = true ;
-				listAttackingSquares.add(new Move(target));
+			if (this.isMoveLegal(new Move(target, this)) == true){
+				this.cb.boardMatrix[7-target/8][target%8].isAttacked = true ;
+				listAttackingSquares.add(new Move(target, this));
+				this.cb.boardMatrix[7-(target/8)][target%8].isAttacked = true ;
+				if (this.pieceColor == 'w'){
+					this.cb.boardMatrix[7-target/8][target%8].piecesAttackingW.add(this) ;
+				} else {
+					this.cb.boardMatrix[7-target/8][target%8].piecesAttackingB.add(this) ;
+				}
 			}
 		}
 		return listAttackingSquares;
 	}
+
+	@Override
+    public Knight copy(ChessBoard board) {
+        Knight newPiece = new Knight(this.piecePosition, this.pieceColor, this.pieceLetter, board);
+        return newPiece;
+    }
 
 }

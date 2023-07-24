@@ -1,33 +1,80 @@
 import java.util.List;
 
 import chessEngine.ChessBoard;
+import chessEngine.pieces.King;
 import chessEngine.pieces.Pawn;
 import chessEngine.Move;
 import chessEngine.Piece;
+import chessEngine.Square;
 
 public class Main {
 
 	public static void main(String[] args) {
-		// rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2 
-		// 8/2k5/5B2/P2pP1n1/Pq2N3/pppR4/3P2P1/5K2 w - - 0 1
-		// 3N4/1N6/6P1/2P2Kpq/P2P4/kpP5/r3p3/4bB2 w - - 0 1
-		final ChessBoard myChessBoard = new ChessBoard("2Q4K/6P1/1p2P3/2bP2B1/1p4rp/p7/3Pr2p/3k4 w - - 0 1");
-		Piece piece = myChessBoard.boardMatrix[0][2].piece ;
-		List <Move> mylist = piece.targetMoves ;
-		System.out.println("=========");
-		for (int i =0; i < mylist.size() ; i ++) {
-			System.out.println(mylist.get(i).getTargetSquare());
+
+		final ChessBoard myChessBoard = new ChessBoard("5k2/5p2/1p6/2rpp1Bb/q2N3P/2b2p1n/1K6/2Q5 w - - 0 1");
+		myChessBoard.printBoard();
+		System.out.println("==================================");
+
+		// TODO FIND THE PROBLEM HERE WITH THE CLONING (chessboard class) !
+		ChessBoard updatedBoard = myChessBoard.clone();
+
+		Piece bishop = updatedBoard.boardMatrix[3][6].piece ;
+		King whiteKing = (King) updatedBoard.boardMatrix[6][1].piece ;
+		Square kingSquare = updatedBoard.boardMatrix[6][1] ;
+	
+		System.out.println(bishop.piecePosition);
+		System.out.println(kingSquare.isAttacked);
+		boolean move_succesfull = updatedBoard.MakeMove(new Move(11, bishop));
+		System.out.println(move_succesfull);
+		System.out.println(bishop.piecePosition);
+		updatedBoard.printBoard();
+		
+	
+	}
+
+	
+	protected static int Evaluation(ChessBoard board) {
+		/* 
+		 * We will only consider Piece Material | King Safety | Control of the Center
+		 */
+		return -1 ;
+	}
+
+	public static double Search(ChessBoard board, int depth, int player){
+
+		List<Move> moves = (player == 1) ? ChessBoard.targetedByWhite : ChessBoard.targetedByBlack ;
+		double bestEval ;
+
+		if (depth == 0){
+			return Evaluation(board);
 		}
 		
-		//myChessBoard.boardMatrix[6][4].representation = 'o' ;
-		myChessBoard.printBoard();
-		//System.out.println(myChessBoard.boardMatrix[6][0].piece.getClass().getName());
-		//boolean mybool = myChessBoard.boardMatrix[6][0].piece.isMoveLegal(new Move(24));
-		//System.out.println(mybool);
-
-
-		//System.out.println(mylist.size());
+		// performs a deepcopy
 		
+
+		if (player == 'w'){
+			bestEval = Double.NEGATIVE_INFINITY ;
+			for (Move move : moves){
+				ChessBoard tempBoard = board.clone();
+				board.MakeMove(move) ;
+				// make the move
+				double eval = Search(tempBoard, depth - 1, (player * -1));
+				bestEval = Math.max(bestEval, eval);
+			}
+			return bestEval ;
+		}else {
+			bestEval = Double.POSITIVE_INFINITY ;
+			for (Move move : moves){
+				ChessBoard tempBoard = board.clone();
+				double eval = Search(tempBoard, depth - 1, (player * -1));
+				bestEval = Math.min(bestEval, eval);
+			}
+			return bestEval ;
+		}
 	}
+
+	
+
+
 
 }

@@ -47,11 +47,24 @@ public class Pawn extends Piece{
 
 		char currentplayer = this.pieceColor ;
 
-		if (cb.isKingInCheck(currentplayer) == true){
+		if (this.cb.isKingInCheck(currentplayer) == true){
+			return false ;
+		}
+
+		if (this.cb.boardMatrix[7-(targetRow)][targetColumn].piece != null){
+			if (this.cb.boardMatrix[7-(targetRow)][targetColumn].piece.pieceColor == this.pieceColor){
+				return false ;
+			}
+		}
+
+		// ensure the king is not checked
+		int kingPosition = (this.pieceColor == 'w') ? this.cb.getWhiteKing().piecePosition : this.cb.getBlackKing().piecePosition ;
+		Square kingSquare = ChessBoard.boardMatrix[7-(kingPosition/8)][kingPosition%8];
+		if (kingSquare.isAttacked){
 			return false ;
 		}
 		
-		if (chessBoard[7-targetRow][targetColumn].piece != null) {
+		if (this.cb.boardMatrix[7-targetRow][targetColumn].piece != null) {
 			// suppose we just want to promote normally our pawn
 			if ((move.getTargetSquare() - piecePosition) == 8) {
 				return true ;
@@ -63,7 +76,7 @@ public class Pawn extends Piece{
 				return true ;
 			}
 			// En passant
-			if(chessBoard[7-targetRow][targetColumn].piece != null){
+			if(this.cb.boardMatrix[7-targetRow][targetColumn].piece != null){
 				if((move.getTargetSquare() - piecePosition) == 7
 						|| (move.getTargetSquare() - piecePosition) == 9) {
 					return true ;
@@ -72,7 +85,7 @@ public class Pawn extends Piece{
 			
 			
 		} 
-		if (chessBoard[7-targetRow][targetColumn].piece != null) {
+		if (this.cb.boardMatrix[7-targetRow][targetColumn].piece != null) {
 			if((move.getTargetSquare() - piecePosition) == 7
 					|| (move.getTargetSquare() - piecePosition) == 9) {
 				return true ;
@@ -87,12 +100,31 @@ public class Pawn extends Piece{
 	public List<Move> setAttackingSquares() {
 		
 		List<Move> listAttackingSquares = new ArrayList<>();
-		listAttackingSquares.add(new Move(piecePosition+7));
-		chessBoard[7-((piecePosition+7)/8)][(piecePosition+7)%8].isAttacked = true ;
-		listAttackingSquares.add(new Move(piecePosition+9));
-		chessBoard[7-((piecePosition+9)/8)][(piecePosition+9)%8].isAttacked = true ;
+
+		listAttackingSquares.add(new Move(piecePosition+7, this));
+		this.cb.boardMatrix[7-((piecePosition+7)/8)][(piecePosition+7)%8].isAttacked = true ;
+		if (this.pieceColor == 'w'){
+			this.cb.boardMatrix[7-(piecePosition+7)/8][(piecePosition+7)%8].piecesAttackingW.add(this) ;
+		} else {
+			this.cb.boardMatrix[7-(piecePosition+7)/8][(piecePosition+7)%8].piecesAttackingB.add(this) ;
+		}	
+
+
+		listAttackingSquares.add(new Move(piecePosition+9, this));
+		this.cb.boardMatrix[7-((piecePosition+9)/8)][(piecePosition+9)%8].isAttacked = true ;
+		if (this.pieceColor == 'w'){
+			this.cb.boardMatrix[7-(piecePosition+9)/8][(piecePosition+9)%8].piecesAttackingW.add(this) ;
+		} else {
+			this.cb.boardMatrix[7-(piecePosition+9)/8][(piecePosition+9)%8].piecesAttackingB.add(this) ;
+		}
 		
 		return listAttackingSquares ;
 	}
+
+	@Override
+    public Pawn copy(ChessBoard board) {
+        Pawn newPiece = new Pawn(this.piecePosition, this.pieceColor, this.pieceLetter, board);
+        return newPiece;
+    }
 	
 }

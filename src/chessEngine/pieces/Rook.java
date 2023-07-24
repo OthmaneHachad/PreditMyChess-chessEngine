@@ -30,23 +30,32 @@ public class Rook extends Piece{
 			return false ;
 		}
 
+		// ensure the king is not checked
+		int kingPosition = (this.pieceColor == 'w') ? this.cb.getWhiteKing().piecePosition : this.cb.getBlackKing().piecePosition ;
+		Square kingSquare = ChessBoard.boardMatrix[7-(kingPosition/8)][kingPosition%8];
+		if (kingSquare.isAttacked){
+			return false ;
+		}
+
+		if (cb.boardMatrix[7-(target/8)][target%8].piece != null){
+			if (cb.boardMatrix[7-(target/8)][target%8].piece.pieceColor == this.pieceColor){
+				return false ;
+			}
+		}
+
 		if (target == this.piecePosition){
 			return false ;
 		}
 
-		char currentplayer = this.pieceColor ;
-
-		if (cb.isKingInCheck(currentplayer) == true){
+		if (cb.isKingInCheck(this.pieceColor) == true){
 			return false ;
 		}
 
 		// Move horizontal
 		if (startRow == targetRow){
-			System.out.println("ITS A HORIZONTAL MOVE");
-			return pathClear(startColumn, targetColumn, startRow, true, chessBoard);
+			return pathClear(startColumn, targetColumn, startRow, true, this.cb.boardMatrix);
 		} else if (startColumn == targetColumn){
-			System.out.println("ITS A VERTICAL MOVE");
-			return pathClear(startRow, targetRow, startColumn, false, chessBoard);
+			return pathClear(startRow, targetRow, startColumn, false, this.cb.boardMatrix);
 		}
 
 		return false ;
@@ -63,25 +72,11 @@ public class Rook extends Piece{
 
 		for (int i = start +1; i < end; i++){
 			if (isHorizontal){
-				System.out.println(fixed + "--- (update)" + i);
-				System.out.println("");
-				//chessBoard[7-fixed][i].representation = 'o' ;
-				ChessBoard.printBoard();
-				System.out.println("");
-				System.out.println(""); 
 				if (board[7-fixed][i].piece != null){
-					System.out.println("PIECE THEREE ");
 					return false ;
 				}
 			} else {
-				System.out.println(i + "--- (update)" + fixed);
-				System.out.println("");
-				//chessBoard[7-i][fixed].representation = 'o' ;
-				ChessBoard.printBoard();
-				System.out.println("");
-				System.out.println(""); 
 				if (board[7-i][fixed].piece != null){
-					System.out.println("PIECE THEREE ");
 					return false ;
 				}
 			}
@@ -109,27 +104,38 @@ public class Rook extends Piece{
 		int row = start / 8 ;
 
 		for (int i = column; i < 64; i = i + 8){
-			boolean verticalMove = isMoveLegal(new Move(i));
+			boolean verticalMove = isMoveLegal(new Move(i, this));
 			if (verticalMove == true){
-				//chessBoard[7-(i/8)][i%8].representation = 'o' ;
-				System.out.println("New Vertical Move !");
-				listAttackingSquares.add(new Move(i));
-				chessBoard[7-(i/8)][i%8].isAttacked = true ;
+				listAttackingSquares.add(new Move(i, this));
+				this.cb.boardMatrix[7-(i/8)][i%8].isAttacked = true ;
+				if (this.pieceColor == 'w'){
+					this.cb.boardMatrix[7-i/8][i%8].piecesAttackingW.add(this) ;
+				} else {
+					this.cb.boardMatrix[7-i/8][i%8].piecesAttackingB.add(this) ;
+				}
 			}
 		}
 
 		for (int i = row *8; i < (row+1)*8; i++ ){
-			System.out.println("New Move: " + i);
-			boolean verticalMove = isMoveLegal(new Move(i));
+			boolean verticalMove = isMoveLegal(new Move(i, this));
 			if (verticalMove == true){
-				//chessBoard[7-(i/8)][i%8].representation = 'o' ;
-				System.out.println("New Horizontal Move !");
-				listAttackingSquares.add(new Move(i));
-				chessBoard[7-(i/8)][i%8].isAttacked = true ;
+				listAttackingSquares.add(new Move(i, this));
+				this.cb.boardMatrix[7-(i/8)][i%8].isAttacked = true ;
+				if (this.pieceColor == 'w'){
+					this.cb.boardMatrix[7-i/8][i%8].piecesAttackingW.add(this) ;
+				} else {
+					this.cb.boardMatrix[7-i/8][i%8].piecesAttackingB.add(this) ;
+				}
 			}
 		}
 		
 		return listAttackingSquares ;
 	}
+
+	@Override
+    public Rook copy(ChessBoard board) {
+        Rook newPiece = new Rook(this.piecePosition, this.pieceColor, this.pieceLetter, board);
+        return newPiece;
+    }
 
 }

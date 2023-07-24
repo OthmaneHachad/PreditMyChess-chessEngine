@@ -15,13 +15,12 @@ public class King extends Piece{
 	
 	public King(int position, char color, char letter, ChessBoard board) {
 		super(position, color, letter, board);
-		this.isChecked = KingChecked();
 	}
 	
-	private boolean KingChecked() {
+	public boolean KingChecked() {
 		final int row = this.piecePosition / 8 ;
 		final int column = this.piecePosition % 8 ;
-		return chessBoard[7-row][column].isAttacked ;
+		return this.cb.boardMatrix[7-row][column].isAttacked ;
 	}
 	
 	@Override
@@ -48,6 +47,18 @@ public class King extends Piece{
 	        return false;
 	    }
 
+		// make sure future position is not checked
+		if (this.cb.boardMatrix[7-(move.getTargetSquare()/8)][(move.getTargetSquare()%8)].isAttacked){
+			return false ;
+		}
+
+		if (cb.boardMatrix[7-(target/8)][target%8].piece != null){
+			if (cb.boardMatrix[7-(target/8)][target%8].piece.pieceColor == this.pieceColor){
+				return false ;
+			}
+		}
+		
+
 		if (target == this.piecePosition){
 			return false ;
 		}
@@ -63,13 +74,25 @@ public class King extends Piece{
 		int[] targets = {this.piecePosition+7, this.piecePosition+9, this.piecePosition+8, this.piecePosition+1, this.piecePosition-1, this.piecePosition-8, this.piecePosition-9, this.piecePosition-7};
 		
 		for (int tg: targets){
-			if (this.isMoveLegal(new Move(tg)) == true){
-				this.chessBoard[7-(tg / 8)][tg % 8].isAttacked = true ; 
-				listAttackingSquares.add(new Move(tg));
+			if (this.isMoveLegal(new Move(tg, this)) == true){
+				this.cb.boardMatrix[7-(tg / 8)][tg % 8].isAttacked = true ; 
+				listAttackingSquares.add(new Move(tg, this));
+				cb.boardMatrix[7-(tg/8)][tg%8].isAttacked = true ;
+				if (this.pieceColor == 'w'){
+					cb.boardMatrix[7-tg/8][tg%8].piecesAttackingW.add(this) ;
+				} else {
+					cb.boardMatrix[7-tg/8][tg%8].piecesAttackingB.add(this) ;
+				}
 			}
 		}		
 		
 		return listAttackingSquares ;
 	}
+
+	@Override
+    public King copy(ChessBoard board) {
+        King newPiece = new King(this.piecePosition, this.pieceColor, this.pieceLetter, board);
+        return newPiece;
+    }
 
 }

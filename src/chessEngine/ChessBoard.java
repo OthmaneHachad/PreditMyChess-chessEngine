@@ -15,7 +15,7 @@ import chessEngine.pieces.Rook;
 
 import java.util.Map ;
 
-public class ChessBoard {
+public class ChessBoard implements Cloneable{
 
 	public static final String EMPTY = "-" ;
 	public static final Square[][] boardMatrix = new Square[8][8];
@@ -24,15 +24,19 @@ public class ChessBoard {
 	private static King whiteKing ;
 	private static King blackKing ;
 
-	List<Integer> targetedByWhite = new ArrayList<Integer>() ;
-	List<Integer> targetedByBlack = new ArrayList<Integer>() ;
+	public static List<Move> targetedByWhite = new ArrayList<Move>() ;
+	public static List<Move> targetedByBlack = new ArrayList<Move>() ;
 	
 	//Constructor
 	public ChessBoard(String FEN_board) {
 		this.FEN = FEN_board ;
+		
 		createBoard();
 		printBoard();
 		setAttackedSquares();
+
+		this.getBlackKing().isChecked = this.getBlackKing().KingChecked();
+		this.getWhiteKing().isChecked = this.getWhiteKing().KingChecked();
 	}
 
 
@@ -139,6 +143,49 @@ public class ChessBoard {
         }
     }
 
+
+	public boolean MakeMove(Move move) {
+
+		//ChessBoard futureBoard = this.clone();
+		Piece piece = move.getPieceMoving() ;
+		int target  = move.getTargetSquare() ;
+
+		Square targetSquare = this.boardMatrix[7 - (target / 8)][target % 8] ;
+		// used only as a reference to create a brand new Square
+		Square startSquare = this.boardMatrix[7 - (piece.piecePosition / 8)][piece.piecePosition % 8] ;
+		
+		char c = piece.pieceColor ;
+		/*
+		 * check if there is a piece there not of the same color
+		 * empty the starting square
+		 * update the target square
+		 */
+
+		
+
+		if (targetSquare.pieceThere == false) {
+			targetSquare.pieceThere = true ;
+		}
+		if (piece.isMoveLegal(move)){
+			piece.move(move);
+			System.out.println("move legal");
+			// update start square
+			this.boardMatrix[7 - (piece.piecePosition / 8)][piece.piecePosition % 8] = new Square(startSquare.isAttacked, startSquare.squareNumber, false);
+
+			// update target square
+			targetSquare.piece = piece.copy(this) ;
+			targetSquare.piece.piecePosition = target ;
+			targetSquare.piece.targetMoves = targetSquare.piece.setAttackingSquares() ;
+			targetSquare.isAttacked = (c == 'w') ? (targetSquare.piecesAttackingB.isEmpty() == false) : (targetSquare.piecesAttackingW.isEmpty() == false) ;
+			targetSquare.representation = piece.pieceLetter ;
+		} else {
+			return false ;
+		}
+		
+		return true ;
+		
+	}
+
 	public King getWhiteKing(){
 		return this.whiteKing;
 	}
@@ -161,14 +208,38 @@ public class ChessBoard {
 					square.piece.targetMoves = square.piece.setAttackingSquares() ;
 					for (Move mv: square.piece.targetMoves){
 						if (square.piece.pieceColor == 'w' && !targetedByWhite.contains(mv.getTargetSquare())){
-							targetedByWhite.add(mv.getTargetSquare());
+							targetedByWhite.add(mv);
 						} else if (square.piece.pieceColor == 'b' && !targetedByBlack.contains(mv.getTargetSquare())){
-							targetedByBlack.add(mv.getTargetSquare());
+							targetedByBlack.add(mv);
 						}
 					}
 				}
 			}
 		}
 	}
+
+	@Override
+	public ChessBoard clone() {
+		try {
+			// TODO FIND THE PROBLEM HERE WITH THE CLONING !
+			ChessBoard clonedBoard = (ChessBoard) super.clone();
+
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					clonedBoard.boardMatrix[i][j] = this.boardMatrix[i][j].copy(clonedBoard);
+				}
+			}
+
+			return clonedBoard;
+		} catch (CloneNotSupportedException e) {
+			// Handle cloning exception if needed
+			System.out.println("Cloning Process Failed");
+			System.out.println(e);
+			return null;
+		}
+	}
+
+
+
 
 }
