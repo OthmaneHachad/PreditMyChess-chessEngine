@@ -29,7 +29,7 @@ public class Queen extends Piece{
 				System.out.println(fixed + "--- (update)" + i);
 				System.out.println("");
 				//chessBoard[7-fixed][i].representation = 'o' ;
-				ChessBoard.printBoard();
+				this.cb.printBoard();
 				System.out.println("");
 				System.out.println(""); 
 				if (board[7-fixed][i].piece != null){
@@ -40,7 +40,7 @@ public class Queen extends Piece{
 				System.out.println(i + "--- (update)" + fixed);
 				System.out.println("");
 				//chessBoard[7-i][fixed].representation = 'o' ;
-				ChessBoard.printBoard();
+				this.cb.printBoard();
 				System.out.println("");
 				System.out.println(""); 
 				if (board[7-i][fixed].piece != null){
@@ -71,7 +71,7 @@ public class Queen extends Piece{
 
 		// ensure the king is not checked
 		int kingPosition = (this.pieceColor == 'w') ? this.cb.getWhiteKing().piecePosition : this.cb.getBlackKing().piecePosition ;
-		Square kingSquare = ChessBoard.boardMatrix[7-(kingPosition/8)][kingPosition%8];
+		Square kingSquare = this.cb.boardMatrix[7-(kingPosition/8)][kingPosition%8];
 		if (kingSquare.isAttacked){
 			return false ;
 		}

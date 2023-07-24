@@ -17,10 +17,10 @@ public class King extends Piece{
 		super(position, color, letter, board);
 	}
 	
-	public boolean KingChecked() {
+	public void KingChecked() {
 		final int row = this.piecePosition / 8 ;
 		final int column = this.piecePosition % 8 ;
-		return this.cb.boardMatrix[7-row][column].isAttacked ;
+		this.isChecked = this.cb.boardMatrix[row][column].isAttacked ;
 	}
 	
 	@Override

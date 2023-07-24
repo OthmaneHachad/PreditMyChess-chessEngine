@@ -32,7 +32,7 @@ public class Rook extends Piece{
 
 		// ensure the king is not checked
 		int kingPosition = (this.pieceColor == 'w') ? this.cb.getWhiteKing().piecePosition : this.cb.getBlackKing().piecePosition ;
-		Square kingSquare = ChessBoard.boardMatrix[7-(kingPosition/8)][kingPosition%8];
+		Square kingSquare = this.cb.boardMatrix[7-(kingPosition/8)][kingPosition%8];
 		if (kingSquare.isAttacked){
 			return false ;
 		}

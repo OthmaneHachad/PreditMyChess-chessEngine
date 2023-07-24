@@ -18,7 +18,7 @@ import java.util.Map ;
 public class ChessBoard implements Cloneable{
 
 	public static final String EMPTY = "-" ;
-	public static final Square[][] boardMatrix = new Square[8][8];
+	public final Square[][] boardMatrix = new Square[8][8];
 	public static String FEN ;
 
 	private static King whiteKing ;
@@ -35,8 +35,17 @@ public class ChessBoard implements Cloneable{
 		printBoard();
 		setAttackedSquares();
 
-		this.getBlackKing().isChecked = this.getBlackKing().KingChecked();
-		this.getWhiteKing().isChecked = this.getWhiteKing().KingChecked();
+		int bking_row = blackKing.piecePosition / 8;
+		int bking_column = blackKing.piecePosition % 8; 
+		int wking_row = whiteKing.piecePosition / 8;
+		int wking_column = whiteKing.piecePosition % 8;
+
+		blackKing.KingChecked();
+		whiteKing.KingChecked();
+
+		System.out.println("The white king's status: " + whiteKing.isChecked);
+		System.out.println("The black king's status: " + blackKing.isChecked);
+
 	}
 
 
@@ -133,10 +142,10 @@ public class ChessBoard implements Cloneable{
 
 
 
-	public static void printBoard() {
+	public void printBoard() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                System.out.print(boardMatrix[i][j].representation + " ");
+                System.out.print(this.boardMatrix[i][j].representation + " ");
 				// boardMatrix[i][j].squareNumber + "" + 
             }
             System.out.println();

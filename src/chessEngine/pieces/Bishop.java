@@ -34,13 +34,13 @@ public class Bishop extends Piece{
 
 		// ensure the king is not checked
 		int kingPosition = (this.pieceColor == 'w') ? this.cb.getWhiteKing().piecePosition : this.cb.getBlackKing().piecePosition ;
-		Square kingSquare = ChessBoard.boardMatrix[7-(kingPosition/8)][kingPosition%8];
+		Square kingSquare = this.cb.boardMatrix[7-(kingPosition/8)][kingPosition%8];
 		if ((kingSquare.isAttacked)==true){
 			return false ;
 		}
 
-		if (ChessBoard.boardMatrix[7-(target/8)][target%8].piece != null){
-			if (ChessBoard.boardMatrix[7-(target/8)][target%8].piece.pieceColor == this.pieceColor){
+		if (this.cb.boardMatrix[7-(target/8)][target%8].piece != null){
+			if (this.cb.boardMatrix[7-(target/8)][target%8].piece.pieceColor == this.pieceColor){
 				return false ;
 			}
 		}
@@ -66,7 +66,7 @@ public class Bishop extends Piece{
 
 	        while (tempRow != targetRow && tempColumn != targetColumn) {
 	    	    
-	            if (ChessBoard.boardMatrix[tempRow][tempColumn].piece != null) {
+	            if (this.cb.boardMatrix[tempRow][tempColumn].piece != null) {
 	            	return false; // There's a piece blocking the path
 	            }
 	            tempRow -= rowStep;
@@ -101,42 +101,42 @@ public class Bishop extends Piece{
 			int SE = this.piecePosition - (i*8) + i;
 			
 			if (this.isMoveLegal(new Move(NW, this)) == true) {
-				ChessBoard.boardMatrix[7-NW/8][NW%8].isAttacked = true;
+				this.cb.boardMatrix[7-NW/8][NW%8].isAttacked = true;
 				listAttackingSquares.add(new Move(NW, this)) ;
 				if (this.pieceColor == 'w'){
-					ChessBoard.boardMatrix[7-NW/8][NW%8].piecesAttackingW.add(this) ;
+					this.cb.boardMatrix[7-NW/8][NW%8].piecesAttackingW.add(this) ;
 				} else {
-					ChessBoard.boardMatrix[7-NW/8][NW%8].piecesAttackingB.add(this) ;
+					this.cb.boardMatrix[7-NW/8][NW%8].piecesAttackingB.add(this) ;
 				}
 			}
 			
 			if (this.isMoveLegal(new Move(NE, this)) == true) {
-				ChessBoard.boardMatrix[7-NE/8][NE%8].isAttacked = true;
+				this.cb.boardMatrix[7-NE/8][NE%8].isAttacked = true;
 				listAttackingSquares.add(new Move(NE, this)) ;
 				if (this.pieceColor == 'w'){
-					ChessBoard.boardMatrix[7-NE/8][NE%8].piecesAttackingW.add(this) ;
+					this.cb.boardMatrix[7-NE/8][NE%8].piecesAttackingW.add(this) ;
 				} else {
-					ChessBoard.boardMatrix[7-NE/8][NE%8].piecesAttackingB.add(this) ;
+					this.cb.boardMatrix[7-NE/8][NE%8].piecesAttackingB.add(this) ;
 				}
 			}
 
 			if (this.isMoveLegal(new Move(SW, this)) == true) {
-				ChessBoard.boardMatrix[7-SW/8][SW%8].isAttacked = true;
+				this.cb.boardMatrix[7-SW/8][SW%8].isAttacked = true;
 				listAttackingSquares.add(new Move(SW, this)) ;
 				if (this.pieceColor == 'w'){
-					ChessBoard.boardMatrix[7-SW/8][SW%8].piecesAttackingW.add(this) ;
+					this.cb.boardMatrix[7-SW/8][SW%8].piecesAttackingW.add(this) ;
 				} else {
-					ChessBoard.boardMatrix[7-SW/8][SW%8].piecesAttackingB.add(this) ;
+					this.cb.boardMatrix[7-SW/8][SW%8].piecesAttackingB.add(this) ;
 				}
 			}
 
 			if (this.isMoveLegal(new Move(SE, this)) == true) {
-				ChessBoard.boardMatrix[7-(SE/8)][(SE%8)].isAttacked = true;
+				this.cb.boardMatrix[7-(SE/8)][(SE%8)].isAttacked = true;
 				listAttackingSquares.add(new Move(SE, this)) ;
 				if (this.pieceColor == 'w'){
-					ChessBoard.boardMatrix[7-SE/8][SE%8].piecesAttackingW.add(this) ;
+					this.cb.boardMatrix[7-SE/8][SE%8].piecesAttackingW.add(this) ;
 				} else {
-					ChessBoard.boardMatrix[7-SE/8][SE%8].piecesAttackingB.add(this) ;
+					this.cb.boardMatrix[7-SE/8][SE%8].piecesAttackingB.add(this) ;
 				}
 			}
 
